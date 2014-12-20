@@ -15,4 +15,4 @@ This repo contains C++ code that generates test cases for the
 conjecture.  More specifically, we implemented a simple greedy
 algorithm for assigning professors to chairs and then exhaustively
 tested it, hoping that the counterexamples generated might provide
-some insight into creating a correct algoirhtm.
+some insight into creating a correct algorithm.
