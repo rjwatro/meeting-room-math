@@ -2,7 +2,7 @@ meeting-room-math
 =================
 
 Anthropomorphic version of the Erdos-Faber-Lovasz conjecture,
-as stated by by Haddad and Tardif in 2004:
+as stated by Haddad and Tardif in 2004:
 "Suppose that, in a university department, there are k committees,
 each consisting of k faculty members, and that all committees
 have their meetings in the same room, which has k chairs. Suppose
