@@ -9,7 +9,6 @@
 #include <cstdlib>
 #include <time.h>
 using namespace std;
-
 const unsigned int NumProfs=32; //  Each professor is numbered from 0 to NumProfs-1
 
 const unsigned int CmteSize=6;
@@ -53,16 +52,72 @@ bool hit ;  // used for detecting overlapping squares in the puzzle
 
 bool successful = true ; // used to track status of tests
 
+int GetRandom();
+bool duplicated (int k1, int k2, int k3); // cmte_array, cmte_inter
+int test(); // NumProfs, CmteSize, cmte_cnt, pieces, cmte_array, maxCmteCnt, cmte_cnt
+//  MAIN will run a bunch of tests
+
+int main() {
+  unsigned int NumProfs=32; //  Each professor is numbered from 0 to NumProfs-1
+  unsigned int CmteSize=6;
+  unsigned int k = 0;
+  unsigned int n , m ;
+  cout << "\n"  << "Welcome to EFL testing!"  << "\n";
+  srand(536339);
+  while (successful)  {
+    zz = 0;
+    NumPieces = 0;
+    MaxCmteCnt = 0 ;
+    k++ ;
+    cout << "This is test number " << k << "\n";
+    test() ;
+  }
+  if  (successful) {cout << "All tests succeeded!" << "\n" ; }
+  if (!successful) {cout << "We had a failure!"    << "\n" ; 
+
+
+  cout << "\n" << "Print the list of committees"  << "\n";
+
+  // lets print out the committee set to see if it looks right
+
+  for ( n=0 ; n<CmteSize ; n++) {
+   cout << "\n";
+   for ( m=0 ; m<CmteSize ; m++ ) {
+     cout << cmte_array[n][m] << " " ;
+    }}
+
+  cout << "\n"  << "\n" << "Next print committee count for each prof"  << "\n";
+
+  for ( n=0 ; n < NumProfs ; n++) {
+  cout << n << ":" << cmte_cnt[n] << " ";
+   if (((n+1) % 10) == 0) { cout << "\n" ; } 
+   }
+
+  cout << "\n"  << "\n" << "Next print the list of pieces"  << "\n";
+
+   for ( n=0 ; n < NumProfs ; n++) {
+   if ( cmte_cnt[n] > 0 )
+     { cout << n << ": " ;
+       for (m=0 ; m<CmteSize ; m++) { cout << pieces[n][m]; }
+       cout << "\n" ;
+     }
+    }
+
+  cout << "\n"  << "That's the counterexample"  << "\n";
+
+  }
+
+}
+
 //Function GetRandom
 //Generate a random number between 0 and NumProfs (inclusive)
 //Revised to use some randomness but to focus on smaller prof numbers
 //so as to build test data with more overlap between the committees
-unsigned int GetRandom()
-{
+int GetRandom() {
   if (zz <= CmteSize) {return (zz++) ; }
   if (zz == NumProfs) {zz = 2 ; }
   return (rand() % NumProfs % zz++) ;
-    }
+}
 
 
 //  Duplicated is used to test new profs as we build committees
@@ -90,7 +145,7 @@ bool duplicated (int k1, int k2, int k3)  {
 //     second, that the intersection constraint of the conjecture
 //  THEN it tries to build a chair assignment using the greedy algorithm
 
-int test()
+int test() // NumProfs, CmteSize, cmte_cnt, pieces, cmte_array, maxCmteCnt, cmte_cnt
 {
   int n, m, oo, temp ;
  
@@ -211,57 +266,5 @@ int test()
       if (m==CmteSize+1) {n++ ; }
       }
  cout << "\n"  << "That's the end of one test!"  << "\n";
-}
-
-//  MAIN will run a bunch of tests
-
-main() {
-  unsigned int k = 0;
-  unsigned int n , m ;
-  cout << "\n"  << "Welcome to EFL testing!"  << "\n";
-  srand(536339);
-  while (successful)  {
-    zz = 0;
-    NumPieces = 0;
-    MaxCmteCnt = 0 ;
-    k++ ;
-    cout << "This is test number " << k << "\n";
-    test() ;
-  }
-  if  (successful) {cout << "All tests succeeded!" << "\n" ; }
-  if (!successful) {cout << "We had a failure!"    << "\n" ; 
-
-
-  cout << "\n" << "Print the list of committees"  << "\n";
-
-  // lets print out the committee set to see if it looks right
-
-  for ( n=0 ; n<CmteSize ; n++) {
-   cout << "\n";
-   for ( m=0 ; m<CmteSize ; m++ ) {
-     cout << cmte_array[n][m] << " " ;
-    }}
-
-  cout << "\n"  << "\n" << "Next print committee count for each prof"  << "\n";
-
-  for ( n=0 ; n < NumProfs ; n++) {
-  cout << n << ":" << cmte_cnt[n] << " ";
-   if (((n+1) % 10) == 0) { cout << "\n" ; } 
-   }
-
-  cout << "\n"  << "\n" << "Next print the list of pieces"  << "\n";
-
-   for ( n=0 ; n < NumProfs ; n++) {
-   if ( cmte_cnt[n] > 0 )
-     { cout << n << ": " ;
-       for (m=0 ; m<CmteSize ; m++) { cout << pieces[n][m]; }
-       cout << "\n" ;
-     }
-    }
-
-  cout << "\n"  << "That's the counterexample"  << "\n";
-
-  }
-
 }
 
