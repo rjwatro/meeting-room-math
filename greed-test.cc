@@ -7,7 +7,10 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <stdlib.h>
 #include <time.h>
+#define DEFAULT_NUM_PROFS 32
+#define DEFAULT_CMTESIZE 6
 using namespace std;
 //const unsigned int NumProfs=32; //  Each professor is numbered from 0 to NumProfs-1
 
@@ -59,11 +62,26 @@ bool test(int NumProfs, int CmteSize); // NumProfs, CmteSize
 //  MAIN will run a bunch of tests
 
 int main(int argc, char ** argv) {
+  bool def = false;
+  int NumProfs, CmteSize; //=32;
+  //int =6;
+  if(argc != 3) {
+    cout << "Incorrect command line args, using default values" << endl;
+    cout << "Usage: " << argv[0] << " <Number of Profs> <cmte size>" << endl;
+    def = true;
+  }
+  if(def) {
+    NumProfs = DEFAULT_NUM_PROFS;
+    CmteSize = DEFAULT_CMTESIZE;
+  }
+  else {
+    NumProfs = atoi(argv[1]);
+    CmteSize = atoi(argv[2]);
+  }
   bool successful = true ; // used to track status of tests
-  unsigned int NumProfs=32; //  Each professor is numbered from 0 to NumProfs-1
-  unsigned int CmteSize=6;
-  unsigned int k = 0;
-  unsigned int n , m ;
+  
+  int k = 0;
+  int n , m ;
   cout << "\n"  << "Welcome to EFL testing!"  << "\n";
   srand(536339);
   while (successful)  {
@@ -104,10 +122,10 @@ bool duplicated (int k1, int k2, int k3, int ** cmte_array, bool ** cmte_inter, 
   for ( a = 0 ; a < k2 ; a++ ) {
     for  ( b = 0 ; b < CmteSize ; b++ ) {
       if ((k1 == cmte_array[a][b]) & cmte_inter[k2][a]) {
-	return (true);
+	       return (true);
       }
       if (k1 == cmte_array[a][b]) {
-	temp_inter[a] = true;
+	       temp_inter[a] = true;
       }
     }
   }
@@ -159,6 +177,7 @@ bool test(int NumProfs, int CmteSize) {
     for ( m=0 ; m < CmteSize ; m++ ) {
       temp = GetRandom(NumProfs,CmteSize);
       while (duplicated(temp,n,m,cmte_array,cmte_inter,CmteSize)) {
+        cout << "loop1" << endl;
 	temp = GetRandom(NumProfs,CmteSize);
       }
       cmte_array[n][m] = temp;
