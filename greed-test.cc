@@ -177,7 +177,7 @@ bool test(int NumProfs, int CmteSize) {
     for ( m=0 ; m < CmteSize ; m++ ) {
       temp = GetRandom(NumProfs,CmteSize);
       while (duplicated(temp,n,m,cmte_array,cmte_inter,CmteSize)) {
-        cout << "loop1" << endl;
+       
 	temp = GetRandom(NumProfs,CmteSize);
       }
       cmte_array[n][m] = temp;
