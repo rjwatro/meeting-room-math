@@ -103,6 +103,11 @@ int GetRandom(int NumProfs, int CmteSize) {
   if (zz == NumProfs) {zz = 2 ; }
   return (rand() % NumProfs % zz++) ;
 }
+
+int randomInt(int max) {
+  return rand() % max;
+}
+
 //  Duplicated is used to test new profs as we build committees
 //  Prof is called duplicated if she is already on the committee under construction
 //     or he would be 2nd intersection with an existing committee
@@ -142,7 +147,6 @@ bool duplicated (int k1, int k2, int k3, int ** cmte_array, bool ** cmte_inter, 
 //  THEN it tries to build a chair assignment using the greedy algorithm
 
 bool test(int NumProfs, int CmteSize) {
-  int n, m, oo, temp ;
   int * cmte_cnt = new int[NumProfs];
   bool ** cmte_inter = new bool * [CmteSize];
   int ** pieces = new int * [NumProfs];
@@ -158,33 +162,33 @@ bool test(int NumProfs, int CmteSize) {
     cmte_array[i] = new int[CmteSize];
   }
   // init cmte_inter to all false
-  for ( n=0 ; n < CmteSize ; n++) {
-    for ( m=0 ; m < CmteSize ; m++ ) {
-      cmte_inter[n][m] = false;
+  for (int i = 0; i < CmteSize; i++) {
+    for (int j = 0; j < CmteSize; j++ ) {
+      cmte_inter[i][j] = false;
     }
   }
-  for(int i = 0; i < NumProfs; i++) {
-    
-  }
   // init pieces to all false
-  for ( n=0 ; n < NumProfs ; n++) {
-    for ( m=0 ; m < CmteSize ; m++ ) {
-      pieces[n][m] = false;
+  for (int i = 0; i < NumProfs; i++) {
+    for (int j = 0; j < CmteSize; j++ ) {
+      pieces[i][j] = false;
     }
   }
   // now we build the commitee array
-  for ( n=0 ; n < CmteSize ; n++) {
-    for ( m=0 ; m < CmteSize ; m++ ) {
-      temp = GetRandom(NumProfs,CmteSize);
-      while (duplicated(temp,n,m,cmte_array,cmte_inter,CmteSize)) {
-       
-	temp = GetRandom(NumProfs,CmteSize);
+  for (int i = 0; i < CmteSize; i++) {
+    for (int j = 0; j < CmteSize; j++ ) {
+      //temp = GetRandom(NumProfs,CmteSize);
+      int temp = randomInt(NumProfs);
+      while (duplicated(temp,i,j,cmte_array,cmte_inter,CmteSize)) { // get random prof and check if duplicated (makes array)
+         // make check for bail count 
+         // make array all 0s of size numProfs if you have picked all profs bail
+         // add array[professors] = 1
+	       temp = GetRandom(NumProfs,CmteSize);
       }
-      cmte_array[n][m] = temp;
-      pieces[temp][n] = true ;
+      cmte_array[i][j] = temp;
+      pieces[temp][i] = true;
       cmte_cnt[temp]++ ;
       if ( cmte_cnt[temp] == (MaxCmteCnt + 1)) {
-	MaxCmteCnt++;
+	       MaxCmteCnt++;
       }
     }
   }
@@ -193,16 +197,16 @@ bool test(int NumProfs, int CmteSize) {
   // so we reuse it to build the chair assignments
   
   // init cmte_inter to all false
-  for ( n=0 ; n < CmteSize ; n++) {
-    for ( m=0 ; m < CmteSize ; m++ ) {
-      cmte_inter[n][m] = false;
+  for (int i = 0; i < CmteSize; i++) {
+    for (int j = 0; j < CmteSize; j++ ) {
+      cmte_inter[i][j] = false;
     }
   }
   
   // first count the number of nonzero pieces
   
-  for ( n=0 ; n < NumProfs ; n++ ) {
-    if ( cmte_cnt[n] > 0 )  {
+  for (int i = 0; i < NumProfs; i++ ) {
+    if ( cmte_cnt[i] > 0 )  {
       NumPieces++ ;
     }
   }
@@ -213,12 +217,12 @@ bool test(int NumProfs, int CmteSize) {
   cout << MaxCmteCnt << "\n" ;
   
   // now build the sorted list of profs
-  
-  oo = 0;
-  for ( m=MaxCmteCnt ; m != 0 ; m=(m-1) ) {
-    for ( n=0 ; n < NumProfs ; n++) {
-      if (cmte_cnt[n] == m) {
-	sorted_profs[oo] = n ; oo++ ;
+  int counter = 0;
+  for (int i = MaxCmteCnt ; i > 0 ; i--) {
+    for (int j = 0; j < NumProfs; j++) {
+      if (cmte_cnt[j] == i) {
+	       sorted_profs[counter] = j; 
+         counter++;
       }
     }
   }
@@ -229,72 +233,78 @@ bool test(int NumProfs, int CmteSize) {
   
   // now implement one solution algorithm
   // the first chair assignment is easy
-  for (oo=0 ; oo < CmteSize; oo++) {
-    cmte_inter[0][oo] = pieces[sorted_profs[0]][oo] ;
+  int current_prof = 0;
+  for (int i = 0; i < CmteSize; i++) {
+    cmte_inter[current_prof][i] = pieces[sorted_profs[current_prof]][i] ;
   }
-  cout << "Prof " << sorted_profs[0] << " is in chair " <<  0 << "\n" ;
+  cout << "Prof " << sorted_profs[current_prof] << " is in chair " << 0 << "\n" ;
   
   //now compute the rest of the chair assignments
   //process profs in the order defined by sorted_profs
   //give each prof the next available chair
   //if no chair is available then fail
   //this is a greedy algorithm!
-  n=1;
-  while(n < NumPieces) { 
-    m = 0;
-    while (m < CmteSize) { 
-      hit = false;
-      for (oo = 0 ; oo < CmteSize ; oo++ ) {
-	hit = (hit || (cmte_inter[m][oo] && pieces[sorted_profs[n]][oo])) ;
-      }
-      // if hit is false then we can make a chair assignment
-      if (!hit) {
-	for (oo = 0 ; oo < CmteSize ; oo++ ){
-	  cmte_inter[m][oo] = (cmte_inter[m][oo] || pieces[sorted_profs[n]][oo]) ;
-	}
-	cout << "Prof " << sorted_profs[n] << " is in chair " <<  m << "\n" ;
-	m = CmteSize + 1;
+  current_prof++;
+  int current_chair = 0;
+  while(current_prof < NumPieces) { 
+    current_chair = 0;
+    while (current_chair < CmteSize) { 
+        hit = false; // cant put chair because 0f an overlap
+        for (int i = 0; i < CmteSize; i++ ) {
+          hit = (hit || (cmte_inter[current_chair][i] && pieces[sorted_profs[current_prof]][i])) ;
+        }
+        // if hit is false then we can make a chair assignment
+        if (!hit) {
+      	for (int i = 0; i < CmteSize; i++ ) {
+      	  cmte_inter[current_chair][i] = (cmte_inter[current_chair][i] || pieces[sorted_profs[current_prof]][i]) ;
+      	}
+      	cout << "Prof " << sorted_profs[current_prof] << " is in chair " <<  current_chair << endl;
+      	current_chair = CmteSize + 1;
       }
       // if hit is true we have to keep looking
       if (hit) {
-        m++;
+        current_chair++;
       }
     }
     // if we exited exactly at CmteSize we failed
-    if (m == CmteSize) {
-      n = NumPieces ;
-      cout << "FAILED" << "\n" ;
+    if (current_chair == CmteSize) {
+      //n = NumPieces ;
+      cout << "FAILED" << endl;
       //successful = false;
-      cout << "We had a failure!"    << "\n" ;
-      cout << "\n" << "Print the list of committees"  << "\n";
+      cout << "We had a failure!"    << endl;
+      cout << endl << "Print the list of committees"  << endl;
       // lets print out the committee set to see if it looks right
-      for ( n = 0 ; n < CmteSize ; n++) {
+      for (int i = 0; i < CmteSize; i++) {
         cout << "\n";
-        for ( m=0 ; m<CmteSize ; m++ ) {
-          cout << cmte_array[n][m] << " " ;
+        for (int j = 0; j < CmteSize; j++ ) {
+          cout << cmte_array[i][j] << " " ;
         }
       }
-      cout << "\n"  << "\n" << "Next print committee count for each prof"  << "\n";
-      for ( n=0 ; n < NumProfs ; n++) {
-	cout << n << ":" << cmte_cnt[n] << " ";
-	if (((n+1) % 10) == 0) { cout << "\n" ; }
-      }
-      cout << "\n"  << "\n" << "Next print the list of pieces"  << "\n";
-      for ( n=0 ; n < NumProfs ; n++) {
-        if ( cmte_cnt[n] > 0 ) { 
-          cout << n << ": " ;
-          for (m=0 ; m<CmteSize ; m++) { cout << pieces[n][m]; }
-          cout << "\n" ;
+      cout << "\n"  << "\n" << "Next print committee count for each prof"  << endl;
+      for (int i = 0; i < NumProfs; i++) {
+        cout << i << ":" << cmte_cnt[i] << " ";
+        if (((i+1) % 10) == 0) { 
+          cout << endl ; 
         }
       }
-      cout << "\n"  << "That's the counterexample"  << "\n";
+      cout << endl  << endl << "Next print the list of pieces"  << endl;
+      for (int i = 0; i < NumProfs ; i++) {
+        if ( cmte_cnt[i] > 0 ) { 
+          cout << i << ": " ;
+          for (int j = 0; j < CmteSize; j++) { 
+            cout << pieces[i][j]; 
+          }
+          cout << endl;
+        }
+      }
+      cout << endl  << "That's the counterexample"  << endl;
       return false;
     }
     // if we exited exactly at CmteSize+1, we succeeded and go on to the next piece
-    if (m==CmteSize+1) {
-      n++ ;
+    if (current_chair==CmteSize+1) {
+      current_prof++ ;
     }
   }
-  cout << "\n"  << "That's the end of one test!"  << "\n";
+  cout << endl  << "That's the end of one test!"  << endl;
   return true;
 }
