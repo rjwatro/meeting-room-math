@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <stdlib.h>
 #include <time.h>
+#include <fstream>
 #define DEFAULT_NUM_PROFS 32
 #define DEFAULT_CMTESIZE 6
 using namespace std;
@@ -38,11 +39,11 @@ unsigned int zz=0;  // This is a counter used in the GetRandom function
 //bool pieces [NumProfs] [CmteSize] ;  //  For each prof, this is his list of committee
 //  assignments ;  These are the pieces when you play the game.
 
-unsigned int NumPieces = 0 ; // number of nonzero pieces in the puzzle game
+// unsigned int NumPieces = 0 ; // number of nonzero pieces in the puzzle game
 // that results from a committee selection
 
 
-unsigned int MaxCmteCnt = 0;  // given a committee selection, this
+// unsigned int MaxCmteCnt = 0;  // given a committee selection, this
 //  is the max number of committees for any one prof -- this is max
 //  value from cmte_cnt
 
@@ -53,12 +54,14 @@ unsigned int MaxCmteCnt = 0;  // given a committee selection, this
 
 bool hit ;  // used for detecting overlapping squares in the puzzle
 
-
+// ofstream file1;
+// ofstream file2;
 
 int GetRandom(int NumProfs, int CmteSize);
+int randomInt(int max);
 bool duplicated (int k1, int k2, int k3, int ** cmte_array, bool ** cmte_inter, int CmteSize); // cmte_array, cmte_inter
 // DO NOT NEED FOR TEST: cmte_cnt cmte_inter pieces cmte_array
-bool test(int NumProfs, int CmteSize); // NumProfs, CmteSize
+bool test(int NumProfs, int CmteSize, int MaxCmteCnt, int NumPieces); // NumProfs, CmteSize
 //  MAIN will run a bunch of tests
 
 int main(int argc, char ** argv) {
@@ -84,14 +87,17 @@ int main(int argc, char ** argv) {
   int n , m ;
   cout << "\n"  << "Welcome to EFL testing!"  << "\n";
   srand(536339);
+  // file1.open("out1");
+  // file2.open("out2");
   while (successful)  {
     zz = 0;
-    NumPieces = 0;
-    MaxCmteCnt = 0 ;
-    k++ ;
     cout << "This is test number " << k << "\n";
-    successful = test(NumProfs,CmteSize) ;
+    
+    successful = test(NumProfs,CmteSize,0,0) ;
+    k++;
   }
+  // file1.close();
+  // file2.close();
 }
 
 //Function GetRandom
@@ -146,7 +152,7 @@ bool duplicated (int k1, int k2, int k3, int ** cmte_array, bool ** cmte_inter, 
 //     second, that the intersection constraint of the conjecture
 //  THEN it tries to build a chair assignment using the greedy algorithm
 
-bool test(int NumProfs, int CmteSize) {
+bool test(int NumProfs, int CmteSize, int MaxCmteCnt, int NumPieces) {
   int * cmte_cnt = new int[NumProfs];
   bool ** cmte_inter = new bool * [CmteSize];
   int ** pieces = new int * [NumProfs];
@@ -176,8 +182,10 @@ bool test(int NumProfs, int CmteSize) {
   // now we build the commitee array
   for (int i = 0; i < CmteSize; i++) {
     for (int j = 0; j < CmteSize; j++ ) {
-      //temp = GetRandom(NumProfs,CmteSize);
-      int temp = randomInt(NumProfs);
+      // temp = GetRandom(NumProfs,CmteSize);
+      // file1 << GetRandom(NumProfs,CmteSize) << endl;
+      // file2 << randomInt(NumProfs) << endl;
+      int temp = randomInt(NumProfs); // more uniformly distributed
       while (duplicated(temp,i,j,cmte_array,cmte_inter,CmteSize)) { // get random prof and check if duplicated (makes array)
          // make check for bail count 
          // make array all 0s of size numProfs if you have picked all profs bail
